@@ -134,7 +134,7 @@ function Cart() {
               <nav>
                 <ul className="breadcrumb-list">
                   <li>
-                    <a href="index.html" title="Back to the home page">
+                    <a href="/" title="Back to the home page">
                       Home
                     </a>
                   </li>
@@ -222,7 +222,7 @@ function Cart() {
                   </table>
                   <br></br>
                   <center>
-                    <a className="ban_btn1 banner_style_2" href="index.html">
+                    <a className="ban_btn1 banner_style_2" href="/checkout">
                       Checkout Now
                     </a>
                   </center>

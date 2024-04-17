@@ -1,10 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../common/header/Header";
 import Footer from "../../common/footer/Footer";
 import "./Checkout.css";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { REACT_APP_URL } from "../../../config/config";
 
 function Checkout() {
+  const { cartdata } = useSelector((state) => state.cart);
+  const [cartItem, setCartItem] = useState([]);
+  const [totalQnt, setTotalQnt] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [totalAmmount, setTotalAmmount] = useState(0);
+
+  useEffect(() => {
+    setCartItem(cartdata);
+  }, [cartdata]);
+
+  useEffect(() => {
+    if (cartItem.length > 0) {
+      let tempTotalQnt = 0;
+      let tempTotalPrice = 0;
+      let tempTotalAmmount = 0;
+      cartItem?.map((book) => {
+        tempTotalQnt += parseInt(book.quantity);
+        tempTotalPrice += parseInt(book.mRP);
+        tempTotalAmmount += parseInt(book.quantity) * parseInt(book.mRP);
+      });
+      setTotalQnt(tempTotalQnt);
+      setTotalPrice(tempTotalPrice);
+      setTotalAmmount(tempTotalAmmount);
+    }
+  }, [cartItem]);
+
   return (
     <>
       <link
@@ -76,7 +104,7 @@ function Checkout() {
               <nav>
                 <ul className="breadcrumb-list">
                   <li>
-                    <a href="index.html" title="Back to the home page">
+                    <a href="/" title="Back to the home page">
                       Home
                     </a>
                   </li>
@@ -98,7 +126,10 @@ function Checkout() {
             <div className="container-fluid">
               <div className="row">
                 <div className="col-lg-6 col-md-6">
-                  <div className="contact-from contact-shadow" style={{marginLeft:"0px"}}>
+                  <div
+                    className="contact-from contact-shadow"
+                    style={{ marginLeft: "0px" }}
+                  >
                     <form
                       method="post"
                       action=""
@@ -113,80 +144,79 @@ function Checkout() {
                       />
                       <input type="hidden" name="utf8" defaultValue="✓" />
                       <div className="col-lg-12">
-                      <input
-                        type="text"
-                        placeholder="Name"
-                        className=""
-                        name="contact[name]"
-                        id="ContactFormName"
-                        defaultValue=""
-                      />
+                        <input
+                          type="text"
+                          placeholder="Name"
+                          className=""
+                          name="contact[name]"
+                          id="ContactFormName"
+                          defaultValue=""
+                        />
                       </div>
-                      <div className="col-lg-6" style={{float:"left"}}>
-                      <input
-                        type="email"
-                        placeholder="Email"
-                        className=""
-                        name="contact[email]"
-                        id="ContactFormEmail"
-                        defaultValue=""
-                      />
+                      <div className="col-lg-6" style={{ float: "left" }}>
+                        <input
+                          type="email"
+                          placeholder="Email"
+                          className=""
+                          name="contact[email]"
+                          id="ContactFormEmail"
+                          defaultValue=""
+                        />
                       </div>
-                      <div className="col-lg-6" style={{float:"left"}}>
-                      <input
-                        type="text"
-                        id="ContactFormSubject"
-                        name="contact[subject]"
-                        placeholder="Mobile No."
-                        defaultValue=""
-                      />
+                      <div className="col-lg-6" style={{ float: "left" }}>
+                        <input
+                          type="text"
+                          id="ContactFormSubject"
+                          name="contact[subject]"
+                          placeholder="Mobile No."
+                          defaultValue=""
+                        />
                       </div>
-                      <div className="col-lg-12" style={{float:"left"}}>
-                      <input
-                        type="text"
-                        id="ContactFormSubject"
-                        name="contact[subject]"
-                        placeholder="Address"
-                        defaultValue=""
-                      />
+                      <div className="col-lg-12" style={{ float: "left" }}>
+                        <input
+                          type="text"
+                          id="ContactFormSubject"
+                          name="contact[subject]"
+                          placeholder="Address"
+                          defaultValue=""
+                        />
                       </div>
-                      <div className="col-lg-6" style={{float:"left"}}>
-                      <input
-                        type="text"
-                        id="ContactFormSubject"
-                        name="contact[subject]"
-                        placeholder="City"
-                        defaultValue=""
-                      />
+                      <div className="col-lg-6" style={{ float: "left" }}>
+                        <input
+                          type="text"
+                          id="ContactFormSubject"
+                          name="contact[subject]"
+                          placeholder="City"
+                          defaultValue=""
+                        />
                       </div>
-                      <div className="col-lg-6" style={{float:"left"}}>
-                      <input
-                        type="text"
-                        id="ContactFormSubject"
-                        name="contact[subject]"
-                        placeholder="State"
-                        defaultValue=""
-                      />
+                      <div className="col-lg-6" style={{ float: "left" }}>
+                        <input
+                          type="text"
+                          id="ContactFormSubject"
+                          name="contact[subject]"
+                          placeholder="State"
+                          defaultValue=""
+                        />
                       </div>
-                      <div className="col-lg-6" style={{float:"left"}}>
-                      <input
-                        type="text"
-                        id="ContactFormSubject"
-                        name="contact[subject]"
-                        placeholder="Country"
-                        defaultValue=""
-                      />
+                      <div className="col-lg-6" style={{ float: "left" }}>
+                        <input
+                          type="text"
+                          id="ContactFormSubject"
+                          name="contact[subject]"
+                          placeholder="Country"
+                          defaultValue=""
+                        />
                       </div>
-                      <div className="col-lg-6" style={{float:"left"}}>
-                      <input
-                        type="text"
-                        id="ContactFormSubject"
-                        name="contact[subject]"
-                        placeholder="Pin Code"
-                        defaultValue=""
-                      />
+                      <div className="col-lg-6" style={{ float: "left" }}>
+                        <input
+                          type="text"
+                          id="ContactFormSubject"
+                          name="contact[subject]"
+                          placeholder="Pin Code"
+                          defaultValue=""
+                        />
                       </div>
-                     
                     </form>
                   </div>
                 </div>
@@ -207,44 +237,38 @@ function Checkout() {
                         Amount
                       </th>
                     </tr>
-                    <tr>
-                      <td>
-                        <img
-                          src="Assets/shop/collections/2d8ec.png?v=1698470765"
-                          alt="Best Sellers"
-                          loading="lazy"
-                          style={{ height: "10vh" }}
-                        />
-                      </td>
-                      <td style={{ fontWeight: "600", fontSize: "18px" }}>
-                        Book Name Here
-                      </td>
-                      <td style={{ textAlign: "right" }}>50</td>
-                      <td style={{ textAlign: "right" }}>Rs. 100</td>
-                      <td style={{ textAlign: "right" }}>Rs. 5000</td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <img
-                          src="Assets/shop/collections/p880c1.png?v=1698470737"
-                          alt="Best Sellers"
-                          loading="lazy"
-                          style={{ height: "10vh" }}
-                        />
-                      </td>
-                      <td style={{ fontWeight: "600", fontSize: "18px" }}>
-                        Book Name Here
-                      </td>
-                      <td style={{ textAlign: "right" }}>20</td>
-                      <td style={{ textAlign: "right" }}>Rs. 200</td>
-                      <td style={{ textAlign: "right" }}>Rs. 4000</td>
-                    </tr>
+                    {cartItem &&
+                      cartItem.length > 0 &&
+                      cartItem.map((book, index) => (
+                        <tr key={index}>
+                          <td>
+                            <img
+                              src={`${REACT_APP_URL}/Image/${book.image}`}
+                              alt="Best Sellers"
+                              loading="lazy"
+                              style={{ height: "10vh" }}
+                            />
+                          </td>
+                          <td style={{ fontWeight: "600", fontSize: "18px" }}>
+                            {book.name}
+                          </td>
+                          <td style={{ textAlign: "right" }}>
+                            {" "}
+                            {book.quantity}
+                          </td>
+                          <td style={{ textAlign: "right" }}>Rs. {book.mRP}</td>
+                          <td style={{ textAlign: "right" }}>
+                            Rs. {book.quantity * book.mRP}
+                          </td>
+                        </tr>
+                      ))}
+
                     <tr>
                       <th>Total</th>
                       <th></th>
-                      <th style={{ textAlign: "right" }}>70</th>
-                      <th style={{ textAlign: "right" }}>Rs. 300</th>
-                      <th style={{ textAlign: "right" }}>Rs. 9000</th>
+                      <th style={{ textAlign: "right" }}>{totalQnt}</th>
+                      <th style={{ textAlign: "right" }}>Rs. {totalPrice}</th>
+                      <th style={{ textAlign: "right" }}>Rs. {totalAmmount}</th>
                     </tr>
                   </table>
                   <br></br>
