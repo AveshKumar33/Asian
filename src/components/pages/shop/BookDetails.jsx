@@ -3,22 +3,102 @@ import { useDispatch, useSelector } from "react-redux";
 import Header from "../../common/header/Header";
 import Footer from "../../common/footer/Footer";
 import "./Shop.css";
-import { fetchBooks } from "../../../redux/slices/bookSlice";
+import { fetchBookDetails } from "../../../redux/slices/bookSlice";
 import { REACT_APP_URL } from "../../../config/config";
+import { useParams } from "react-router-dom";
+import { updateTocart } from "../../../redux/slices/cartSlice";
 
 function Shop() {
-  const { loading, books } = useSelector((state) => state.book);
+  const { loading, bookDetails } = useSelector((state) => state.book);
+  const { cartdata } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  const [allBooks, setAllBooks] = useState([]);
+  let { id } = useParams();
+
+  const [bookDetail, setBookDetail] = useState({});
+  const [bookQuantity, setQuantity] = useState(1);
+  const bookQnty = cartdata.find((item) => item.id === id);
+  console.log("bookQuantity", bookQnty?.quantity);
   useEffect(() => {
-    dispatch(fetchBooks());
-  }, [dispatch]);
+    dispatch(fetchBookDetails(id));
+  }, [id]);
   useEffect(() => {
     if (loading === "fulfilled") {
-      setAllBooks(books);
+      setBookDetail(bookDetails);
+      setQuantity(bookQnty?.quantity ?? 1);
     }
   }, [loading]);
 
+  function handleUpdateCart(book) {
+    const {
+      id,
+      authors,
+      bookCode,
+      courseSemesters,
+      image,
+      isFeatured,
+      languageId,
+
+      languageNav,
+      mRP,
+      numId,
+      name,
+      ...rest
+    } = book;
+    dispatch(
+      updateTocart({
+        product: {
+          id,
+          authors,
+          bookCode,
+          courseSemesters,
+          image,
+          isFeatured,
+          languageId,
+          languageNav,
+          mRP,
+          numId,
+          name,
+          quantity: bookQuantity,
+        },
+      })
+    );
+  }
+  // function handleCart(book) {
+  //   const {
+  //     id,
+  //     authors,
+  //     bookCode,
+  //     courseSemesters,
+  //     image,
+  //     isFeatured,
+  //     languageId,
+
+  //     languageNav,
+  //     mRP,
+  //     numId,
+  //     name,
+  //     ...rest
+  //   } = book;
+
+  //   dispatch(
+  //     addTocart({
+  //       product: {
+  //         id,
+  //         quantity: 1,
+  //         authors,
+  //         bookCode,
+  //         courseSemesters,
+  //         image,
+  //         isFeatured,
+  //         languageId,
+  //         languageNav,
+  //         mRP,
+  //         numId,
+  //         name,
+  //       },
+  //     })
+  //   );
+  // }
   return (
     <>
       <link
@@ -127,17 +207,17 @@ function Shop() {
                               float: "left",
                             }}
                           >
-                            <div
+                            <img
                               className="col-lg-6"
+                              src={`${REACT_APP_URL}/Image/${bookDetail.image}`}
                               style={{
                                 float: "left",
-                                backgroundImage:
-                                  "url(../Assets/shop/collections/2d8ec.png?v=1698470765)",
                                 height: "100vh",
-                                backgroundPosition: "center",
-                                backgroundSize: "cover",
+                                objectFit: "cover",
                               }}
-                            ></div>
+                              alt="Book Cover"
+                            />
+
                             <div
                               className="col-lg-1"
                               style={{
@@ -153,14 +233,12 @@ function Shop() {
                               }}
                             >
                               <h3 style={{ fontWeight: "600" }}>
-                                Book Name Here
+                                {bookDetail.name}
                               </h3>
-                              <h6>ISBN: 978-93-5502-231-8</h6>
+                              <h6>ISBN: {bookDetail.iSBN}</h6>
                               <p style={{ color: "red", fontWeight: "600" }}>
-                                Rs. 300
+                                Rs. {bookDetail.mRP}
                               </p>
-                              {/* <p style={{color:"#000", fontWeight:"600", fontSize:"20px"}}>Book Category :</p> */}
-
                               <table className="table table-spriped">
                                 <tr>
                                   <th>Sr. No.</th>
@@ -177,23 +255,44 @@ function Shop() {
                                   className="quantity"
                                   style={{ width: "50%" }}
                                 >
+                                  {/* Button to decrease quantity */}
                                   <button
                                     className="minus"
                                     aria-label="Decrease"
+                                    onClick={() =>
+                                      setQuantity((prevQuantity) =>
+                                        Math.max(prevQuantity - 1, 1)
+                                      )
+                                    }
                                   >
                                     −
                                   </button>
+                                  {/* Input for quantity */}
                                   <input
                                     type="number"
                                     className="input-box"
-                                    defaultValue={1}
+                                    value={bookQuantity}
                                     min={1}
                                     max={10}
+                                    onChange={(e) => {
+                                      const value = parseInt(e.target.value);
+                                      setQuantity(
+                                        isNaN(value)
+                                          ? 1
+                                          : Math.min(Math.max(value, 1), 10)
+                                      );
+                                    }}
                                     style={{ width: "100%" }}
                                   />
+                                  {/* Button to increase quantity */}
                                   <button
                                     className="plus"
                                     aria-label="Increase"
+                                    onClick={() =>
+                                      setQuantity((prevQuantity) =>
+                                        Math.min(prevQuantity + 1, 10)
+                                      )
+                                    }
                                   >
                                     +
                                   </button>
@@ -204,7 +303,8 @@ function Shop() {
                               <center>
                                 <a
                                   className="ban_btn1 banner_style_2"
-                                  href="index.html"
+                                  // href="index.html"
+                                  onClick={() => handleUpdateCart(bookDetail)}
                                 >
                                   Add To Cart
                                 </a>

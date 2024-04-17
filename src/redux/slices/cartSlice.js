@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { toastError, toastSuceess } from "../../util/reactToastify";
+
 export const cartSlice = createSlice({
   name: "cart",
   initialState: {
@@ -10,6 +12,8 @@ export const cartSlice = createSlice({
     addTocart: (state, action) => {
       const sevenDaysInMillis = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
       const checkcartdata = JSON.parse(JSON.stringify(state.cartdata));
+      // console.log("checkcartdata checkcartdata", checkcartdata);
+
       let {
         id,
         authors,
@@ -26,14 +30,19 @@ export const cartSlice = createSlice({
       // const isItemExist = checkcartdata.find(
       //     (i) => i?.id === action?.payload.product.id
       // )
+      // console.log(" action.payload.mRP", mRP, id);
 
       const isItemExist = findObjectFromArray(
         action.payload.product,
         checkcartdata
       );
+      console.log(" action.isItemExist", isItemExist);
+      if (isItemExist) {
+        toastError("item already exists");
+      }
 
       if (isItemExist) {
-        // const existingcartdata = JSON.parse(JSON.stringify(state.cartdata));
+        // const existingcartdata = JSON.parse(JSON.stringify(state.cartdata));-
         const existingdata = checkcartdata.map((s) =>
           s === isItemExist ? action.payload.product : s
         );
@@ -42,6 +51,37 @@ export const cartSlice = createSlice({
       } else {
         state.cartdata.push(action.payload.product);
         state.quantity += 1;
+        toastSuceess("item add successfully");
+        state.lastUpdated = Date.now() + sevenDaysInMillis;
+      }
+    },
+    updateTocart: (state, action) => {
+      const sevenDaysInMillis = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+      const checkcartdata = JSON.parse(JSON.stringify(state.cartdata));
+      let { id, quantity, ...rest } = {
+        ...action.payload.product,
+      };
+
+      const isItemExist = findObjectFromArray(
+        action.payload.product,
+        checkcartdata
+      );
+      console.log(" action.isItemExist", isItemExist);
+
+      if (isItemExist) {
+        const sevenDaysInMillis = 7 * 24 * 60 * 60 * 1000;
+        const indexToRemove = state.cartdata.findIndex(
+          (item) => item.id === id
+        );
+        if (indexToRemove !== -1) {
+          state.cartdata.splice(indexToRemove, 1, action.payload.product);
+          toastSuceess("item updated successfully");
+          state.lastUpdated = Date.now() + sevenDaysInMillis;
+        }
+      } else {
+        state.cartdata.push(action.payload.product);
+        state.quantity += 1;
+        toastSuceess("item add successfully");
         state.lastUpdated = Date.now() + sevenDaysInMillis;
       }
     },
@@ -49,11 +89,18 @@ export const cartSlice = createSlice({
     removeTocart: (state, action) => {
       const sevenDaysInMillis = 7 * 24 * 60 * 60 * 1000;
       const removeitem = JSON.parse(JSON.stringify(state.cartdata));
+      console.log(" action.payload.item", action.payload);
+      console.log("removeitem removeitem", removeitem);
+
       const filtereddata = removeitem.filter(
-        (i) => JSON.stringify(i) !== JSON.stringify(action.payload.item)
+        (book) => book.id !== action.payload
       );
+      console.log("filtereddata filtereddata", filtereddata);
       state.cartdata = filtereddata;
-      state.quantity -= 1;
+      if (filtereddata.length < removeitem.length) {
+        state.quantity -= 1;
+      }
+      toastSuceess("item removed successfully");
       state.lastUpdated = Date.now() + sevenDaysInMillis;
     },
 
@@ -100,16 +147,16 @@ export const cartSlice = createSlice({
         state.cartdata = cardData;
       }
 
-      console.log(
-        "index:-",
-        index,
-        "item-",
-        item,
-        "paymentModeType:-",
-        paymentModeType,
-        "cartdata:-",
-        cardData[index]
-      );
+      // console.log(
+      //   "index:-",
+      //   index,
+      //   "item-",
+      //   item,
+      //   "paymentModeType:-",
+      //   paymentModeType,
+      //   "cartdata:-",
+      //   cardData[index]
+      // );
     },
   },
 });
@@ -117,30 +164,33 @@ export const cartSlice = createSlice({
 //Function to check from array of objects
 function findObjectFromArray(searchObj, arr) {
   // const result = [];
-  console.log("searchObj -called", searchObj);
-  console.log("arr -called", arr);
-  if (arr.length === 0) {
-    return false;
-  }
-  let isMatch = true;
+  // console.log("searchObj item " + searchObj);
+  // console.log("arr item " + arr.length);
+  if (arr.length == 0) return false;
+  let isMatch = false;
   for (let i = 0; i < arr.length; i++) {
     const currentObj = arr[i];
-    for (const key of Object.keys(searchObj)) {
-      console.log("findObjectFromArray -called", searchObj[key]);
-      if (searchObj[key] !== currentObj[key]) {
-        isMatch = false;
-        break;
-      }
+    // console.log("loooppppp searchObj", Object.values(searchObj)[0]);
+    // console.log("loooppppp searchObj", Object.values(currentObj)[0]);
+    if (Object.values(searchObj)[0] === Object.values(currentObj)[0]) {
+      isMatch = true;
     }
 
-    if (isMatch) {
-      return currentObj;
-    }
+    // for (const key of Object.keys(searchObj)) {
+    //   console.log("loooppppp currentObj", currentObj[key]);
+    //   if (searchObj[key] !== currentObj[key]) {
+    //     isMatch = true;
+    //     break;
+    //   }
+    // }
+    // console.log("loooppppp isMatch", isMatch);
   }
+  return isMatch;
 }
 
 export const {
   addTocart,
+  updateTocart,
   removeTocart,
   resetCart,
   verifyCart,

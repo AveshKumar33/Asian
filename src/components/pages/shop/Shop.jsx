@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Header from "../../common/header/Header";
 import Footer from "../../common/footer/Footer";
 import "./Shop.css";
@@ -19,6 +20,7 @@ function Shop() {
   const { semesters } = useSelector((state) => state.semester);
   const { authors } = useSelector((state) => state.author);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [allBooks, setAllBooks] = useState([]);
   const [filterLoading, setFilterLoading] = useState(false);
   const [allAuthors, setAllAuthors] = useState([]);
@@ -50,9 +52,9 @@ function Shop() {
     }
   }, [loading]);
 
-  useEffect(() => {
-    // console.log("allBooks", allBooks);
-  }, [allBooks]);
+  // useEffect(() => {
+  //   // console.log("allBooks", allBooks);
+  // }, [allBooks]);
 
   function handleCart(book) {
     const {
@@ -129,7 +131,7 @@ function Shop() {
     }, 1000);
   };
 
-  console.log("mjsndjaksdlka", allBooks, filterAuthors);
+  // console.log("mjsndjaksdlka", allBooks, filterAuthors);
 
   return (
     <>
@@ -859,7 +861,7 @@ function Shop() {
                         <div className="row theme-products ">
                           {allBooks &&
                             allBooks.length > 0 &&
-                            allBooks.slice(0, 10).map((book, index) => (
+                            allBooks.map((book, index) => (
                               <div
                                 key={index}
                                 className="col-xl-4 col-lg-4 
@@ -876,10 +878,7 @@ function Shop() {
                                     <div className="theme-product-image-wrap product-color">
                                       <div className="theme-product-image">
                                         <div className="theme-product-cus-tab icon_bg_img">
-                                          <a
-                                            // href="../products/chronicles-of-celestial-realms.html"
-                                            className="theme-product-image"
-                                          >
+                                          <a className="theme-product-image">
                                             <center>
                                               <img
                                                 className="popup_cart_image"
@@ -889,10 +888,12 @@ function Shop() {
                                                   height: "60vh",
                                                   width: "100vw",
                                                 }}
+                                                onClick={() => {
+                                                  navigate(
+                                                    `/BookDetails/${book.id}`
+                                                  );
+                                                }}
                                               />
-                                              {/* <addTocart
-                                                onClick={() => handleCart(book)}
-                                              /> */}
                                               <button
                                                 onClick={() => handleCart(book)}
                                               >

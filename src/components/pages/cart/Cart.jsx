@@ -1,15 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { REACT_APP_URL } from "../../../config/config";
 import Header from "../../common/header/Header";
 import Footer from "../../common/footer/Footer";
 import "./Cart.css";
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
-import { removeTocart } from "../../../redux/slices/cartSlice";
+import {
+  removeTocart,
+  resetCart,
+  updateTocart,
+} from "../../../redux/slices/cartSlice";
 function Cart() {
-  // const { cartdata } = useSelector((state) => state.cart);
-  const jsonData = localStorage.getItem("cartdata");
-  const cartData = JSON.parse(jsonData) ?? [];
+  const { cartdata } = useSelector((state) => state.cart);
+  const [cartItem, setCartItem] = useState([]);
+  // console.log(" cart data loaded", cartdata);
+  const dispatch = useDispatch();
+  const deletecartItems = (book) => {
+    const { id, ...rest } = book;
+    // dispatch(resetCart());
+    dispatch(removeTocart(id));
+  };
+  useEffect(() => {
+    setCartItem(cartdata);
+  }, [cartdata]);
+
+  const updateOnChangeHandler = (newVal, currentObj) => {
+    let updatedObj = { ...currentObj };
+    updatedObj.quantity = newVal;
+
+    const {
+      id,
+      authors,
+      bookCode,
+      courseSemesters,
+      image,
+      isFeatured,
+      languageId,
+      quantity,
+      languageNav,
+      mRP,
+      numId,
+      name,
+      ...rest
+    } = updatedObj;
+    dispatch(
+      updateTocart({
+        product: {
+          id,
+          authors,
+          bookCode,
+          courseSemesters,
+          image,
+          isFeatured,
+          languageId,
+          languageNav,
+          mRP,
+          numId,
+          name,
+          quantity,
+        },
+      })
+    );
+  };
+
   return (
     <>
       <link
@@ -120,9 +173,9 @@ function Cart() {
                         Action
                       </th>
                     </tr>
-                    {cartData &&
-                      cartData.length > 0 &&
-                      cartData.map((book, index) => (
+                    {cartItem &&
+                      cartItem.length > 0 &&
+                      cartItem.map((book, index) => (
                         <tr key={index}>
                           <td>
                             <img
@@ -140,8 +193,13 @@ function Cart() {
                               type="number"
                               className="form-control"
                               name="quantity"
+                              min={1}
+                              max={10}
                               value={book.quantity || null}
                               style={{ width: "40%" }}
+                              onChange={(e) => {
+                                updateOnChangeHandler(e.target.value, book);
+                              }}
                             />
                           </td>
                           <td style={{ textAlign: "right" }}>Rs. {book.mRP}</td>
@@ -149,7 +207,15 @@ function Cart() {
                             Rs.{book.quantity * book.mRP}
                           </td>
                           <td style={{ fontSize: "25px", textAlign: "center" }}>
-                            <MdOutlineRemoveShoppingCart />
+                            <td
+                              style={{ fontSize: "25px", textAlign: "center" }}
+                            >
+                              <MdOutlineRemoveShoppingCart
+                                onClick={() => {
+                                  deletecartItems(book);
+                                }}
+                              />
+                            </td>
                           </td>
                         </tr>
                       ))}
