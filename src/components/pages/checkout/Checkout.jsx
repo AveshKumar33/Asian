@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../../common/header/Header";
 import Footer from "../../common/footer/Footer";
 import "./Checkout.css";
-import { MdOutlineRemoveShoppingCart } from "react-icons/md";
+// import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { REACT_APP_URL } from "../../../config/config";
 
